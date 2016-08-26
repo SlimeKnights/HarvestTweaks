@@ -1,0 +1,17 @@
+[{
+    "modid": "harvesttweaks",
+    "name": "Harvest Tweaks",
+    "description": "A small mod that allows to customize harvest levels",
+    "version": "${version}",
+    "mcversion": "${MCversion}",
+    "url": "https://github.com/bonii-xx/harvesttweaks",
+    "updateUrl": "",
+    "authorList": [
+      "boni"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "parent":"",
+    "dependencies": []
+}]
