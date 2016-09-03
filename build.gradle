@@ -31,6 +31,10 @@ repositories {
         name 'forge'
         url 'http://files.minecraftforge.net/maven'
     }
+    maven {
+        name 'Tethys (drakon.io)'
+        url "http://tethys.drakon.io/maven"
+    }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -49,7 +53,10 @@ configFile.withReader {
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
 }
+
 configurations {
+    shade
+    compile.extendsFrom shade
     deployerJars
 }
 
@@ -86,6 +93,7 @@ minecraft {
     runDir = "run"
     replace '${version}', project.version
     useDepAts = true
+    srgExtra "PK: io/drakon/pulsar boni/harvesttweaks/puslar"
 }
 
 dependencies {
@@ -94,6 +102,7 @@ dependencies {
     deobfCompile "slimeknights.mantle:Mantle:${config.minecraft_version}-${config.mantle_version}"
     deobfCompile "slimeknights:TConstruct:${config.minecraft_version}-${config.tic_version}"
     deployerJars 'org.apache.maven.wagon:wagon-ssh:2.2'
+    shade 'io.drakon:pulsar:${config.pulsar_version}'
 }
 
 sourceSets {
@@ -121,6 +130,14 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
     }
 }
 
