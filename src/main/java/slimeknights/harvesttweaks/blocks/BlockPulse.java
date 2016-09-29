@@ -34,11 +34,15 @@ public class BlockPulse implements IPulse {
   @Override
   public void applyChanges() {
     // oredict before block, since block is more specific and can overwrite therefore
-    //applyOredictChanges();
+    applyOredictChanges();
     applyBlockChanges();
   }
 
   private void applyOredictChanges() {
+    if(config.logChanges) {
+      log.info(HarvestTweaks.bigLogString("Applying oredict block changes"));
+    }
+
     config.oredict.forEach(
         (tool, oreHarvestLevels) -> oreHarvestLevels.forEach(
             (ore, level) -> applyChangeToOredict(ore, tool, level)
@@ -51,6 +55,9 @@ public class BlockPulse implements IPulse {
   }
 
   private void applyBlockChanges() {
+    if(config.logChanges) {
+      log.info(HarvestTweaks.bigLogString("Applying block changes"));
+    }
     config.blocks.forEach(
         (tool, blockHarvestLevels) -> blockHarvestLevels.forEach(
           (blockMeta, level) -> modifyBlock(new ItemStack(blockMeta.block, 1, blockMeta.metadata), tool, level)
@@ -82,7 +89,7 @@ public class BlockPulse implements IPulse {
           if(config.logChanges) {
             String oldTool = block.getHarvestTool(state);
             int oldLevel = block.getHarvestLevel(state);
-            log.info(String.format("Changed Harvest Level of %s:%d from %s: %d to %s %d",
+            log.info(String.format("Changing block harvest level of %s:%d from %s: %d to %s: %d",
                                    block.getRegistryName(), meta,
                                    oldTool, oldLevel,
                                    tool, harvestLevel));

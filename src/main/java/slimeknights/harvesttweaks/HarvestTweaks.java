@@ -63,6 +63,11 @@ public class HarvestTweaks
         CONFIG.save();
     }
 
+    public static String bigLogString(String text) {
+        String line = new String(new char[20]).replace('\0', '=');
+        return line + "- " + text + " -" + line;
+    }
+
     // dummy config because we don't want a module config
     private static class PulseConfiguration implements IConfiguration {
 

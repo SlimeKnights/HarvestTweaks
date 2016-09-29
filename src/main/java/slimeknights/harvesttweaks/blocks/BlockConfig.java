@@ -37,8 +37,12 @@ public class BlockConfig extends ConfigFile {
 
   @Override
   public void insertDefaults() {
-    insertBlockDefaults();
-    insertOredictDefaults();
+    if(blocks.isEmpty()) {
+      insertBlockDefaults();
+    }
+    if(oredict.isEmpty()) {
+      insertOredictDefaults();
+    }
   }
 
   private void insertBlockDefaults() {
@@ -65,6 +69,9 @@ public class BlockConfig extends ConfigFile {
 
   private void insertOredictDefaults() {
     for(String ore : OreDictionary.getOreNames()) {
+      String matchedTool = null;
+      int matchedLevel = -2;
+      Map<String, Integer> toolSingleEntry = new HashMap<>();
       for(ItemStack oreEntry : OreDictionary.getOres(ore)) {
         Block block = Block.getBlockFromItem(oreEntry.getItem());
         if(block == null) {
@@ -73,17 +80,33 @@ public class BlockConfig extends ConfigFile {
 
         String tool = block.getHarvestTool(block.getDefaultState());
         int level = block.getHarvestLevel(block.getDefaultState());
-        boolean singleEntry = getValidBlockstates(block, new ArrayList<>(), tool, level);
 
-        if(tool != null && singleEntry) {
-          oredict.computeIfAbsent(tool, x -> new HashMap<>()).putIfAbsent(ore, block.getHarvestLevel(block.getDefaultState()));
+        level = toolSingleEntry.getOrDefault(matchedTool, level);
+
+        if((matchedTool != null && !matchedTool.equals(tool)) || !getValidBlockstates(block, new ArrayList<>(), tool, level)) {
+          // -2 indicates that it's not a single entry
+          toolSingleEntry.put(tool, -2);
+          toolSingleEntry.put(matchedTool, -2);
           break;
         }
+        else {
+          toolSingleEntry.put(tool, level);
+          matchedTool = tool;
+        }
       }
+
+      toolSingleEntry.forEach((tool, level) -> {
+        if(level > -2) {
+          oredict.computeIfAbsent(tool, x -> new HashMap<>()).putIfAbsent(ore, level);
+        }
+      });
     }
   }
 
   public boolean getValidBlockstates(Block block, List<IBlockState> validStates, String tool, int level) {
+    if(tool == null) {
+      return false;
+    }
     boolean singleEntry = true;
     for(int i = 0; i < 16; i++) {
       IBlockState state;

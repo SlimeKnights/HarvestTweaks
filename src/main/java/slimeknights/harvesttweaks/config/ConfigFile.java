@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.stream.IntStream;
 
 import slimeknights.mantle.configurate.ConfigurationNode;
 import slimeknights.mantle.configurate.ConfigurationOptions;
@@ -30,7 +31,7 @@ public abstract class ConfigFile {
 
   public static File configFolder;
 
-  @Setting("If true, all changes made by this file will be logged")
+  @Setting(comment = "If true, all changes made by this file will be logged")
   public boolean logChanges = false;
 
   private final File file;
