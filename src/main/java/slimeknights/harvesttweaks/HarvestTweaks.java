@@ -1,11 +1,15 @@
 package slimeknights.harvesttweaks;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
+import java.util.List;
 
 import slimeknights.harvesttweaks.blocks.BlockPulse;
 import slimeknights.harvesttweaks.config.Config;
@@ -29,12 +33,16 @@ public class HarvestTweaks
 
     public static Config CONFIG;
 
+    private static List<IPulse> pulses = ImmutableList.<IPulse>builder()
+        .add(new BlockPulse())
+        .add(new ItemPulse())
+        .add(new TinkerPulse())
+        .build();
+
     private static PulseManager pulseManager;
     static {
         pulseManager = new PulseManager(new PulseConfiguration());
-        pulseManager.registerPulse(new BlockPulse());
-        pulseManager.registerPulse(new ItemPulse());
-        pulseManager.registerPulse(new TinkerPulse());
+        pulses.forEach(pulseManager::registerPulse);
     }
 
     @EventHandler
@@ -48,13 +56,11 @@ public class HarvestTweaks
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        CONFIG.load();
-        CONFIG.save();
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-
+        CONFIG.save();
     }
 
     // dummy config because we don't want a module config

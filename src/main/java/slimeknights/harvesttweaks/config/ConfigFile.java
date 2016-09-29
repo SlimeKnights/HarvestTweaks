@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import slimeknights.mantle.configurate.ConfigurationNode;
 import slimeknights.mantle.configurate.ConfigurationOptions;
@@ -19,6 +20,7 @@ import slimeknights.mantle.configurate.commented.CommentedConfigurationNode;
 import slimeknights.mantle.configurate.hocon.HoconConfigurationLoader;
 import slimeknights.mantle.configurate.loader.ConfigurationLoader;
 import slimeknights.mantle.configurate.objectmapping.ObjectMappingException;
+import slimeknights.mantle.configurate.objectmapping.Setting;
 import slimeknights.mantle.configurate.objectmapping.serialize.ConfigSerializable;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializer;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializers;
@@ -27,6 +29,9 @@ import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializers;
 public abstract class ConfigFile {
 
   public static File configFolder;
+
+  @Setting("If true, all changes made by this file will be logged")
+  public boolean logChanges = false;
 
   private final File file;
   private final ConfigurationLoader<CommentedConfigurationNode> loader;
