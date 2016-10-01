@@ -21,9 +21,11 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 @Pulse(id = "blocks", forced = true)
 public class BlockPulse implements IPulse {
 
+  public static final BlockPulse INSTANCE = new BlockPulse();
+
   private static Logger log = LogManager.getLogger("HarvestTweaks-Blocks");
 
-  private BlockConfig config;
+  public BlockConfig config;
 
   @Subscribe
   public void init(FMLInitializationEvent event) {
@@ -86,24 +88,28 @@ public class BlockPulse implements IPulse {
 
         // only modify if there is something to modify
         if(!tool.equals(block.getHarvestTool(state)) || block.getHarvestLevel(state) != harvestLevel) {
-          if(config.logChanges) {
-            String oldTool = block.getHarvestTool(state);
-            int oldLevel = block.getHarvestLevel(state);
-            log.info(String.format("Changing block harvest level of %s:%d from %s: %d to %s: %d",
-                                   block.getRegistryName(), meta,
-                                   oldTool, oldLevel,
-                                   tool, harvestLevel));
-          }
+          try {
+            if(config.logChanges) {
+              String oldTool = block.getHarvestTool(state);
+              int oldLevel = block.getHarvestLevel(state);
+              log.info(String.format("Changing block harvest level of %s:%d from %s: %d to %s: %d",
+                                     block.getRegistryName(), meta,
+                                     oldTool, oldLevel,
+                                     tool, harvestLevel));
+            }
 
-          block.setHarvestLevel(tool, harvestLevel, state);
+            block.setHarvestLevel(tool, harvestLevel, state);
 
-          if(block.getHarvestLevel(state) != harvestLevel || !tool.equals(block.getHarvestTool(state))) {
-            log.warn("Changing of harvest capabilities is not supported by block " + block.getRegistryName() + ":" + meta);
+            if(block.getHarvestLevel(state) != harvestLevel || !tool.equals(block.getHarvestTool(state))) {
+              log.warn("Changing of harvest capabilities is not supported by block " + block.getRegistryName() + ":" + meta);
+            }
+          } catch(Exception e) {
+            log.warn("An error occurred when trying to change harvest capabilities of block " + block.getRegistryName() + " with meta " + meta);
           }
         }
       } catch(Exception e) {
         // exception can occur if stuff does weird things metadatas
-        log.warn("An error occurred when trying to change harvest capabilities of block " + block.getRegistryName() + " with meta " + meta);
+        log.warn("An error occurred when trying to determine the harvest level of block " + block.getRegistryName() + " with meta " + meta + ". The metadata might possibly be invalid.");
       }
     });
   }

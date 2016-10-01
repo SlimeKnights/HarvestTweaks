@@ -1,21 +1,18 @@
 package slimeknights.harvesttweaks.blocks;
 
-import com.google.common.reflect.TypeToken;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import slimeknights.harvesttweaks.config.BlockMeta;
+import slimeknights.mantle.config.BlockMeta;
 import slimeknights.harvesttweaks.config.ConfigFile;
 import slimeknights.mantle.configurate.objectmapping.Setting;
 import slimeknights.mantle.configurate.objectmapping.serialize.ConfigSerializable;

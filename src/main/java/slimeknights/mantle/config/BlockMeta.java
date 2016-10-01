@@ -1,4 +1,4 @@
-package slimeknights.harvesttweaks.config;
+package slimeknights.mantle.config;
 
 import com.google.common.reflect.TypeToken;
 
@@ -35,11 +35,7 @@ public class BlockMeta {
     @Override
     public void serialize(TypeToken<?> typeToken, BlockMeta blockMeta, ConfigurationNode configurationNode)
         throws ObjectMappingException {
-      String val = blockMeta.block.getRegistryName().toString();
-      if(blockMeta.metadata > -1) {
-        val += ":" + blockMeta.metadata;
-      }
-      configurationNode.setValue(val);
+      configurationNode.setValue(blockMeta.toString());
     }
   };
 
@@ -84,4 +80,12 @@ public class BlockMeta {
     return result;
   }
 
+  @Override
+  public String toString() {
+    String val = block.getRegistryName().toString();
+    if(metadata > -1) {
+      val += ":" + metadata;
+    }
+    return val;
+  }
 }

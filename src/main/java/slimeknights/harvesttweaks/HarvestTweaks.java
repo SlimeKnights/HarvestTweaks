@@ -3,12 +3,16 @@ package slimeknights.harvesttweaks;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.io.File;
 import java.util.List;
 
 import slimeknights.harvesttweaks.blocks.BlockPulse;
@@ -16,6 +20,7 @@ import slimeknights.harvesttweaks.config.Config;
 import slimeknights.harvesttweaks.config.ConfigFile;
 import slimeknights.harvesttweaks.items.ItemPulse;
 import slimeknights.harvesttweaks.tinkers.TinkerPulse;
+import slimeknights.mantle.config.AbstractConfigFile;
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.control.PulseManager;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
@@ -24,7 +29,8 @@ import slimeknights.mantle.pulsar.pulse.PulseMeta;
     version = HarvestTweaks.VERSION,
     dependencies = "required-after:Forge@[12.18.1.2073,);" +
                    "before:tconstruct",
-    acceptedMinecraftVersions = "[1.10.2, 1.11)"
+    acceptedMinecraftVersions = "[1.10.2, 1.11)",
+//    guiFactory = "slimeknights.harvesttweaks.config.ConfigGui$GuiFactory"
 )
 public class HarvestTweaks
 {
@@ -34,7 +40,7 @@ public class HarvestTweaks
     public static Config CONFIG;
 
     private static List<IPulse> pulses = ImmutableList.<IPulse>builder()
-        .add(new BlockPulse())
+        .add(BlockPulse.INSTANCE)
         .add(new ItemPulse())
         .add(new TinkerPulse())
         .build();
@@ -50,8 +56,9 @@ public class HarvestTweaks
         // ensure forges harvestlevel stuff has been statically initialized
         new ForgeHooks();
 
-        ConfigFile.init(event);
+        AbstractConfigFile.init();
         CONFIG = new Config();
+        Config.setConfigDirectory(event.getModConfigurationDirectory());
     }
 
     @EventHandler
@@ -61,6 +68,16 @@ public class HarvestTweaks
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         CONFIG.save();
+
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+
+    @SubscribeEvent
+    public void update(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if(Config.configID.equals(event.getConfigID())) {
+            pulses.forEach(IPulse::applyChanges);
+        }
     }
 
     public static String bigLogString(String text) {
