@@ -14,6 +14,4 @@ public abstract class ConfigFile extends AbstractConfigFile {
     super(Config.configDirectory, name);
   }
 
-  public abstract void insertDefaults();
-
 }

@@ -30,7 +30,10 @@ public class ItemConfig extends ConfigFile {
         Set<String> classes = item.getToolClasses(stack);
         classes.forEach(toolclass -> {
           try {
-            tools.computeIfAbsent(item, x -> new HashMap<>()).putIfAbsent(toolclass, item.getHarvestLevel(stack, toolclass, null, null));
+            tools.computeIfAbsent(item, x -> new HashMap<>()).computeIfAbsent(toolclass, s -> {
+              setNeedsSaving();
+              return item.getHarvestLevel(stack, toolclass, null, null);
+            });
           } catch(Exception e) {
             // in case something happens in getHarvestLevel
           }

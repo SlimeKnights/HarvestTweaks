@@ -22,12 +22,13 @@ import slimeknights.mantle.configurate.objectmapping.ObjectMappingException;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializer;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializers;
 
-public class AbstractConfigFile {
+public abstract class AbstractConfigFile {
 
   private static boolean initialized = false;
 
   private final File file;
   private final ConfigurationLoader<CommentedConfigurationNode> loader;
+  private boolean needsSaving = false;
 
   public AbstractConfigFile(File configFolder, String name) {
     this(new File(configFolder, name + ".cfg"));
@@ -71,6 +72,20 @@ public class AbstractConfigFile {
 
     initialized = true;
   }
+
+  public void setNeedsSaving() {
+    needsSaving = true;
+  }
+
+  public boolean needsSaving() {
+    return needsSaving;
+  }
+
+  public void clearNeedsSaving() {
+    needsSaving = false;
+  }
+
+  public abstract void insertDefaults();
 
   private static abstract class RegistrySerializer<T extends IForgeRegistryEntry<T>> implements TypeSerializer<T> {
 

@@ -1,0 +1,110 @@
+package slimeknights.mantle.config;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigCategory;
+import net.minecraftforge.common.config.Property;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
+import java.util.Map;
+
+import slimeknights.tconstruct.common.TinkerNetwork;
+import slimeknights.tconstruct.common.config.Config;
+import slimeknights.tconstruct.common.config.ConfigSync;
+import slimeknights.tconstruct.common.config.ConfigSyncPacket;
+
+public class ConfigSyncHandler {
+
+  @SideOnly(Side.CLIENT)
+  private static boolean needsRestart;
+
+  @SubscribeEvent
+  @SideOnly(Side.SERVER)
+  public void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+    if(event.player instanceof EntityPlayerMP && FMLCommonHandler.instance().getSide().isServer()) {
+      return;
+    }
+
+    /*
+    ConfigSyncPacket packet = new ConfigSyncPacket();
+    packet.categories.add(Config.Modules);
+    packet.categories.add(Config.Gameplay);
+    TinkerNetwork.sendTo(packet, (EntityPlayerMP) event.player);*/
+  }
+
+  @SubscribeEvent
+  @SideOnly(Side.CLIENT)
+  public void playerJoinedWorld(EntityJoinWorldEvent event) {
+    if(event.getEntity() == Minecraft.getMinecraft().thePlayer) {
+      if(needsRestart) {
+        //Minecraft.getMinecraft().theWorld.sendQuittingDisconnectingPacket();
+        //Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(new ChatComponentText("reboot pl0x"));
+        //Minecraft.getMinecraft().loadWorld(null);
+        Minecraft.getMinecraft().thePlayer
+            .addChatMessage(new TextComponentString("[TConstruct] " + I18n.translateToLocal("config.synced.restart")));
+      }
+      else {
+        Minecraft.getMinecraft().thePlayer
+            .addChatMessage(new TextComponentString("[TConstruct] " + I18n.translateToLocal("config.synced.ok")));
+      }
+    }
+    MinecraftForge.EVENT_BUS.unregister(this);
+  }
+
+  // syncs the data to the current config
+  public static void syncConfig(List<ConfigCategory> categories) {
+    needsRestart = false;
+    boolean changed = false;
+    Config.log.info("Syncing Config with Server");
+/*
+    for(ConfigCategory serverCategory : categories) {
+      // get the local equivalent
+      ConfigCategory category = Config.pulseConfig.getCategory();
+      if(!serverCategory.getName().equals(category.getName())) {
+        category = Config.configFile.getCategory(serverCategory.getName());
+      }
+
+      // sync all the properties
+      for(Map.Entry<String, Property> entry : serverCategory.entrySet()) {
+        String name = entry.getKey();
+        Property serverProp = entry.getValue();
+
+        // hopefully present locally?
+        Property prop = category.get(name);
+        if(prop == null) {
+          // use the server one
+          category.put(name, serverProp);
+        }
+        else {
+          // we try to use the preset one because it contains comments n stuff
+          if(!prop.getString().equals(serverProp.getString())) {
+            // new value, update it
+            prop.setValue(serverProp.getString());
+            needsRestart |= prop.requiresMcRestart();
+            changed = true;
+            Config.log.debug("Syncing %s - %s: %s", category.getName(), prop.getName(), prop.getString());
+          }
+        }
+      }
+    }
+
+    // if we changed something... disconnect and tell the player to restart?
+    if(Config.configFile.hasChanged()) {
+      Config.configFile.save();
+    }
+    Config.pulseConfig.flush();
+
+    if(changed) {
+      MinecraftForge.EVENT_BUS.register(new ConfigSync());
+    }*/
+  }
+}

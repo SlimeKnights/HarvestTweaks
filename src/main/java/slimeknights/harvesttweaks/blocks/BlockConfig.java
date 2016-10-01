@@ -52,13 +52,19 @@ public class BlockConfig extends ConfigFile {
       boolean singleEntry = getValidBlockstates(block, validStates, tool, level);
       if(singleEntry) {
         if(tool != null) {
-          blocks.computeIfAbsent(tool, x -> new HashMap<>()).putIfAbsent(new BlockMeta(block, -1), level);
+          blocks.computeIfAbsent(tool, x -> new HashMap<>()).computeIfAbsent(new BlockMeta(block, -1), blockMeta -> {
+            setNeedsSaving();
+            return level;
+          });
         }
       }
       else {
         validStates.forEach(state -> {
           String harvestTool = block.getHarvestTool(state);
-          blocks.computeIfAbsent(harvestTool, x -> new HashMap<>()).putIfAbsent(BlockMeta.of(state), block.getHarvestLevel(state));
+          blocks.computeIfAbsent(harvestTool, x -> new HashMap<>()).computeIfAbsent(BlockMeta.of(state), blockMeta -> {
+            setNeedsSaving();
+            return block.getHarvestLevel(state);
+          });
         });
       }
     }
