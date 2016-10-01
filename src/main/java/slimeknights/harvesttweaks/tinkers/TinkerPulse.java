@@ -15,6 +15,7 @@ import slimeknights.tconstruct.library.materials.HeadMaterialStats;
 /** Sets harvest levels of tinker materials */
 @Pulse(id = TinkerPulse.MODID, modsRequired = TinkerPulse.MODID, forced = true)
 public class TinkerPulse implements IPulse {
+
   static final String MODID = "tconstruct";
 
   @Subscribe

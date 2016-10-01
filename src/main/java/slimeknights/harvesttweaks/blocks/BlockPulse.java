@@ -62,8 +62,8 @@ public class BlockPulse implements IPulse {
     }
     config.blocks.forEach(
         (tool, blockHarvestLevels) -> blockHarvestLevels.forEach(
-          (blockMeta, level) -> modifyBlock(new ItemStack(blockMeta.block, 1, blockMeta.metadata), tool, level)
-    ));
+            (blockMeta, level) -> modifyBlock(new ItemStack(blockMeta.block, 1, blockMeta.metadata), tool, level)
+        ));
   }
 
   private void modifyBlock(ItemStack stack, String tool, int harvestLevel) {

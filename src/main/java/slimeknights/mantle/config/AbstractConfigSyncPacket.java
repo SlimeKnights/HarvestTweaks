@@ -8,28 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
-import slimeknights.harvesttweaks.HarvestTweaks;
 import slimeknights.mantle.network.AbstractPacket;
 
-public abstract class ConfigSyncPacket extends AbstractPacket {
+public abstract class AbstractConfigSyncPacket extends AbstractPacket {
 
   private List<AbstractConfigFile> config;
 
-  public ConfigSyncPacket() {
+  public AbstractConfigSyncPacket() {
   }
 
   protected abstract AbstractConfig getConfig();
 
   @Override
   public IMessage handleClient(NetHandlerPlayClient netHandler) {
-    ConfigSyncHandler.syncConfig(getConfig(), config);
+    AbstractConfig.syncConfig(getConfig(), config);
     return null;
   }
 
   @Override
   public IMessage handleServer(NetHandlerPlayServer netHandler) {
     // We sync from server to client, not vice versa
-    return null;
+    throw new UnsupportedOperationException("Trying to sync client configs to the server. You registered the packet for the wrong side.");
   }
 
   @Override

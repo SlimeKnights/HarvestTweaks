@@ -27,7 +27,7 @@ public class ConfigFieldEntry extends DummyConfigElement {
     if(Map.class.isAssignableFrom(clazz)) {
       this.isProperty = false;
       ImmutableList.Builder<IConfigElement> builder = ImmutableList.builder();
-      Map<Object, Object> map = ((Map<Object,Object>)instance);
+      Map<Object, Object> map = ((Map<Object, Object>) instance);
       map.forEach((o, o2) -> builder.add(new ConfigFieldEntry(o.toString(), o.toString() + ".lang", o2.getClass(), o2, map)));
       this.childElements = builder.build();
       this.configEntryClass = GuiConfigEntries.CategoryEntry.class;

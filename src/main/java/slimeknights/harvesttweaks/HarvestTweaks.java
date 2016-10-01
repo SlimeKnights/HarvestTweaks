@@ -12,18 +12,15 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.io.File;
 import java.util.List;
 
 import slimeknights.harvesttweaks.blocks.BlockPulse;
 import slimeknights.harvesttweaks.config.Config;
-import slimeknights.harvesttweaks.config.ConfigFile;
+import slimeknights.harvesttweaks.config.ConfigSyncHandler;
 import slimeknights.harvesttweaks.config.HarvestTweakConfigSyncPacket;
 import slimeknights.harvesttweaks.items.ItemPulse;
 import slimeknights.harvesttweaks.tinkers.TinkerPulse;
 import slimeknights.mantle.config.AbstractConfigFile;
-import slimeknights.mantle.config.ConfigSyncHandler;
-import slimeknights.mantle.config.ConfigSyncPacket;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.control.PulseManager;
@@ -36,82 +33,83 @@ import slimeknights.mantle.pulsar.pulse.PulseMeta;
     acceptedMinecraftVersions = "[1.10.2, 1.11)"
 //    guiFactory = "slimeknights.harvesttweaks.config.ConfigGui$GuiFactory"
 )
-public class HarvestTweaks
-{
-    public static final String MODID = "harvesttweaks";
-    public static final String VERSION = "${version}";
+public class HarvestTweaks {
 
-    public static Config CONFIG;
+  public static final String MODID = "harvesttweaks";
+  public static final String VERSION = "${version}";
 
-    private static List<IPulse> pulses = ImmutableList.<IPulse>builder()
-        .add(BlockPulse.INSTANCE)
-        .add(new ItemPulse())
-        .add(new TinkerPulse())
-        .build();
+  public static Config CONFIG;
 
-    public static final NetworkWrapper NETWORK = new NetworkWrapper(MODID + ":sync");
+  private static List<IPulse> pulses = ImmutableList.<IPulse>builder()
+      .add(BlockPulse.INSTANCE)
+      .add(new ItemPulse())
+      .add(new TinkerPulse())
+      .build();
 
-    private static PulseManager pulseManager;
-    static {
-        pulseManager = new PulseManager(new PulseConfiguration());
-        pulses.forEach(pulseManager::registerPulse);
+  public static final NetworkWrapper NETWORK = new NetworkWrapper(MODID + ":sync");
+
+  private static PulseManager pulseManager;
+
+  static {
+    pulseManager = new PulseManager(new PulseConfiguration());
+    pulses.forEach(pulseManager::registerPulse);
+  }
+
+  @EventHandler
+  public void preInit(FMLPreInitializationEvent event) {
+    // ensure forges harvestlevel stuff has been statically initialized
+    new ForgeHooks();
+
+    AbstractConfigFile.init();
+    CONFIG = new Config();
+    Config.setConfigDirectory(event.getModConfigurationDirectory());
+
+    NETWORK.registerPacketClient(HarvestTweakConfigSyncPacket.class);
+  }
+
+  @EventHandler
+  public void init(FMLInitializationEvent event) {
+  }
+
+  @EventHandler
+  public void postInit(FMLPostInitializationEvent event) {
+    CONFIG.save();
+
+    MinecraftForge.EVENT_BUS.register(this);
+    if(event.getSide().isServer()) {
+      MinecraftForge.EVENT_BUS.register(new ConfigSyncHandler());
+    }
+  }
+
+
+  @SubscribeEvent
+  public void update(ConfigChangedEvent.OnConfigChangedEvent event) {
+    if(Config.configID.equals(event.getConfigID())) {
+      pulses.forEach(IPulse::applyChanges);
+    }
+  }
+
+  public static String bigLogString(String text) {
+    String line = new String(new char[20]).replace('\0', '=');
+    return line + "- " + text + " -" + line;
+  }
+
+  // dummy config because we don't want a module config
+  private static class PulseConfiguration implements IConfiguration {
+
+    @Override
+    public void load() {
+      // nope
     }
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        // ensure forges harvestlevel stuff has been statically initialized
-        new ForgeHooks();
-
-        AbstractConfigFile.init();
-        CONFIG = new Config();
-        Config.setConfigDirectory(event.getModConfigurationDirectory());
-
-        NETWORK.registerPacketClient(HarvestTweakConfigSyncPacket.class);
+    @Override
+    public boolean isModuleEnabled(PulseMeta meta) {
+      return true;
     }
 
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
+    @Override
+    public void flush() {
+      // nope
     }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        CONFIG.save();
-
-        MinecraftForge.EVENT_BUS.register(this);
-        if(event.getSide().isServer()) {
-            MinecraftForge.EVENT_BUS.register(new ConfigSyncHandler());
-        }
-    }
-
-
-    @SubscribeEvent
-    public void update(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if(Config.configID.equals(event.getConfigID())) {
-            pulses.forEach(IPulse::applyChanges);
-        }
-    }
-
-    public static String bigLogString(String text) {
-        String line = new String(new char[20]).replace('\0', '=');
-        return line + "- " + text + " -" + line;
-    }
-
-    // dummy config because we don't want a module config
-    private static class PulseConfiguration implements IConfiguration {
-
-        @Override
-        public void load() {
-            // nope
-        }
-
-        @Override
-        public boolean isModuleEnabled(PulseMeta meta) {
-            return true;
-        }
-
-        @Override
-        public void flush() {
-            // nope
-        }
-    }
+  }
 }
