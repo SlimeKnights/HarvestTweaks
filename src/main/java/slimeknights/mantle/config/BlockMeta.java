@@ -7,13 +7,15 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.Serializable;
+
 import slimeknights.mantle.configurate.ConfigurationNode;
 import slimeknights.mantle.configurate.objectmapping.ObjectMappingException;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializer;
 
-public class BlockMeta {
+public class BlockMeta implements Serializable {
 
-  public static final TypeSerializer<BlockMeta> SERIALIZER = new TypeSerializer<BlockMeta>() {
+  public transient static final TypeSerializer<BlockMeta> SERIALIZER = new TypeSerializer<BlockMeta>() {
     @Override
     public BlockMeta deserialize(TypeToken<?> typeToken, ConfigurationNode configurationNode)
         throws ObjectMappingException {

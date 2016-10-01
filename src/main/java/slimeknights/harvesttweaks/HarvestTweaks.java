@@ -18,9 +18,13 @@ import java.util.List;
 import slimeknights.harvesttweaks.blocks.BlockPulse;
 import slimeknights.harvesttweaks.config.Config;
 import slimeknights.harvesttweaks.config.ConfigFile;
+import slimeknights.harvesttweaks.config.HarvestTweakConfigSyncPacket;
 import slimeknights.harvesttweaks.items.ItemPulse;
 import slimeknights.harvesttweaks.tinkers.TinkerPulse;
 import slimeknights.mantle.config.AbstractConfigFile;
+import slimeknights.mantle.config.ConfigSyncHandler;
+import slimeknights.mantle.config.ConfigSyncPacket;
+import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.control.PulseManager;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
@@ -45,6 +49,8 @@ public class HarvestTweaks
         .add(new TinkerPulse())
         .build();
 
+    public static final NetworkWrapper NETWORK = new NetworkWrapper(MODID + ":sync");
+
     private static PulseManager pulseManager;
     static {
         pulseManager = new PulseManager(new PulseConfiguration());
@@ -59,6 +65,8 @@ public class HarvestTweaks
         AbstractConfigFile.init();
         CONFIG = new Config();
         Config.setConfigDirectory(event.getModConfigurationDirectory());
+
+        NETWORK.registerPacketClient(HarvestTweakConfigSyncPacket.class);
     }
 
     @EventHandler
@@ -70,6 +78,9 @@ public class HarvestTweaks
         CONFIG.save();
 
         MinecraftForge.EVENT_BUS.register(this);
+        if(event.getSide().isServer()) {
+            MinecraftForge.EVENT_BUS.register(new ConfigSyncHandler());
+        }
     }
 
 

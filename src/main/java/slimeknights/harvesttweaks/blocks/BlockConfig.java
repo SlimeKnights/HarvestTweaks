@@ -3,6 +3,8 @@ package slimeknights.harvesttweaks.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.netty.buffer.ByteBuf;
 import slimeknights.mantle.config.BlockMeta;
 import slimeknights.harvesttweaks.config.ConfigFile;
 import slimeknights.mantle.configurate.objectmapping.Setting;

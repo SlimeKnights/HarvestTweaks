@@ -5,24 +5,34 @@ import com.google.common.reflect.TypeToken;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import slimeknights.mantle.configurate.ConfigurationNode;
 import slimeknights.mantle.configurate.ConfigurationOptions;
 import slimeknights.mantle.configurate.commented.CommentedConfigurationNode;
 import slimeknights.mantle.configurate.hocon.HoconConfigurationLoader;
+import slimeknights.mantle.configurate.loader.AtomicFiles;
 import slimeknights.mantle.configurate.loader.ConfigurationLoader;
 import slimeknights.mantle.configurate.objectmapping.ObjectMappingException;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializer;
 import slimeknights.mantle.configurate.objectmapping.serialize.TypeSerializers;
 
-public abstract class AbstractConfigFile {
+public abstract class AbstractConfigFile implements Serializable {
 
   private static boolean initialized = false;
 
@@ -46,6 +56,93 @@ public abstract class AbstractConfigFile {
 
   public void save(ConfigurationNode node) throws IOException {
     loader.save(node);
+  }
+
+  public String getName() {
+    return file.getName();
+  }
+
+  public abstract void insertDefaults();
+
+
+  public AbstractConfigFile loadFromPacket(byte[] packetData) {
+    ConfigurationLoader<CommentedConfigurationNode> packetDataLoader = HoconConfigurationLoader
+        .builder()
+        .setSource(() -> new BufferedReader(new InputStreamReader(new ByteArrayInputStream(packetData))))
+        .setSink(AtomicFiles.createAtomicWriterFactory(file.toPath(), StandardCharsets.UTF_8))
+        .build();
+
+    try {
+      CommentedConfigurationNode node = packetDataLoader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
+
+      try {
+        return node.getValue(TypeToken.of(this.getClass()));
+      } catch(ObjectMappingException e) {
+        e.printStackTrace();
+      }
+    } catch(IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+    fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+    if (type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass())) {
+      fields = getAllFields(fields, type.getSuperclass());
+    }
+
+    return fields;
+  }
+
+  public byte[] getPacketData() {
+    try {
+      return Files.readAllBytes(file.toPath());
+    } catch(IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public boolean sync(AbstractConfigFile other) {
+    if(other.getClass() != this.getClass()) {
+      return false;
+    }
+
+    List<Field> fieldsToProcess = new ArrayList<>();
+    getAllFields(fieldsToProcess, this.getClass());
+
+    for(Field field : fieldsToProcess) {
+      try {
+        if(!field.isAccessible()) {
+          field.setAccessible(true);
+        }
+        Object original = field.get(this);
+        Object remote = field.get(other);
+
+        if(!original.equals(remote)) {
+          field.set(this, remote);
+          setNeedsSaving();
+        }
+      } catch(IllegalAccessException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return needsSaving();
+  }
+
+  public void setNeedsSaving() {
+    needsSaving = true;
+  }
+
+  public boolean needsSaving() {
+    return needsSaving;
+  }
+
+  public void clearNeedsSaving() {
+    needsSaving = false;
   }
 
   public static void init() {
@@ -72,20 +169,6 @@ public abstract class AbstractConfigFile {
 
     initialized = true;
   }
-
-  public void setNeedsSaving() {
-    needsSaving = true;
-  }
-
-  public boolean needsSaving() {
-    return needsSaving;
-  }
-
-  public void clearNeedsSaving() {
-    needsSaving = false;
-  }
-
-  public abstract void insertDefaults();
 
   private static abstract class RegistrySerializer<T extends IForgeRegistryEntry<T>> implements TypeSerializer<T> {
 
