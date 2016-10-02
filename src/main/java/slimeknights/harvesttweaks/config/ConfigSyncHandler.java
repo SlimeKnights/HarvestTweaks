@@ -17,6 +17,8 @@ import slimeknights.harvesttweaks.HarvestTweaks;
 
 public class ConfigSyncHandler {
 
+  public static ConfigSyncHandler INSTANCE = new ConfigSyncHandler();
+
   @SideOnly(Side.CLIENT)
   private static boolean needsRestart;
 
@@ -34,10 +36,10 @@ public class ConfigSyncHandler {
   public void playerJoinedWorld(TickEvent.ClientTickEvent event) {
     EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
     if(needsRestart) {
-      player.addChatMessage(new TextComponentString("[TConstruct] " + I18n.translateToLocal("config.synced.restart")));
+      player.addChatMessage(new TextComponentString("[HarvestTweaks] " + I18n.translateToLocal("config.synced.restart")));
     }
     else {
-      player.addChatMessage(new TextComponentString("[TConstruct] " + I18n.translateToLocal("config.synced.ok")));
+      player.addChatMessage(new TextComponentString("[HarvestTweaks] " + I18n.translateToLocal("config.synced.ok")));
     }
     MinecraftForge.EVENT_BUS.unregister(this);
   }
