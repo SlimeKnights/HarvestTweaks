@@ -33,7 +33,7 @@ public class ItemPulse implements IPulse {
     if(config.logChanges) {
       log.info(HarvestTweaks.bigLogString("Applying item changes"));
     }
-    config.tools.forEach((item, harvestInfo) -> harvestInfo.forEach((toolclass, level) -> updateHarvestLevel(item, toolclass, level)));
+    config.tools.forEach((toolclass, harvestInfo) -> harvestInfo.forEach((item, level) -> updateHarvestLevel(item, toolclass, level)));
   }
 
   private void updateHarvestLevel(Item item, String toolclass, int harvestLevel) {

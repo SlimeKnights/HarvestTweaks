@@ -16,7 +16,7 @@ public class ItemConfig extends ConfigFile {
 
   // key = Item, value = toolclass + level
   @Setting
-  Map<Item, Map<String, Integer>> tools = new HashMap<>();
+  Map<String, Map<Item, Integer>> tools = new HashMap<>();
 
   public ItemConfig() {
     super("Tools");
@@ -30,7 +30,7 @@ public class ItemConfig extends ConfigFile {
         Set<String> classes = item.getToolClasses(stack);
         classes.forEach(toolclass -> {
           try {
-            tools.computeIfAbsent(item, x -> new HashMap<>()).computeIfAbsent(toolclass, s -> {
+            tools.computeIfAbsent(toolclass, x -> new HashMap<>()).computeIfAbsent(item, s -> {
               setNeedsSaving();
               return item.getHarvestLevel(stack, toolclass, null, null);
             });
