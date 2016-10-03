@@ -48,7 +48,7 @@ public class BlockConfig extends ConfigFile {
 
       // check if all states have the same tool and harvest level
       String tool = block.getHarvestTool(block.getDefaultState());
-      int level = block.getHarvestLevel(block.getDefaultState());
+      int level = getActualHarvestLevel(block.getDefaultState());
       boolean singleEntry = getValidBlockstates(block, validStates, tool, level);
       if(singleEntry) {
         if(tool != null) {
@@ -63,7 +63,7 @@ public class BlockConfig extends ConfigFile {
           String harvestTool = block.getHarvestTool(state);
           blocks.computeIfAbsent(harvestTool, x -> new HashMap<>()).computeIfAbsent(BlockMeta.of(state), blockMeta -> {
             setNeedsSaving();
-            return block.getHarvestLevel(state);
+            return getActualHarvestLevel(state);
           });
         });
       }
@@ -73,7 +73,6 @@ public class BlockConfig extends ConfigFile {
   private void insertOredictDefaults() {
     for(String ore : OreDictionary.getOreNames()) {
       String matchedTool = null;
-      int matchedLevel = -2;
       Map<String, Integer> toolSingleEntry = new HashMap<>();
       for(ItemStack oreEntry : OreDictionary.getOres(ore)) {
         Block block = Block.getBlockFromItem(oreEntry.getItem());
@@ -82,7 +81,7 @@ public class BlockConfig extends ConfigFile {
         }
 
         String tool = block.getHarvestTool(block.getDefaultState());
-        int level = block.getHarvestLevel(block.getDefaultState());
+        int level = getActualHarvestLevel(block.getDefaultState());
 
         level = toolSingleEntry.getOrDefault(matchedTool, level);
 
@@ -106,8 +105,15 @@ public class BlockConfig extends ConfigFile {
     }
   }
 
-  public boolean getValidBlockstates(Block block, List<IBlockState> validStates, String tool, int level) {
-    if(tool == null) {
+  private int getActualHarvestLevel(IBlockState state) {
+    if(state.getMaterial().isToolNotRequired()) {
+      return -1;
+    }
+    return state.getBlock().getHarvestLevel(state);
+  }
+
+  private boolean getValidBlockstates(Block block, List<IBlockState> validStates, String tool, int level) {
+      if(tool == null) {
       return false;
     }
     boolean singleEntry = true;
@@ -122,7 +128,7 @@ public class BlockConfig extends ConfigFile {
       if(block.getMetaFromState(state) == i) {
         validStates.add(state);
 
-        if(!Objects.equals(tool, block.getHarvestTool(state)) || level != block.getHarvestLevel(state)) {
+        if(!Objects.equals(tool, block.getHarvestTool(state)) || level != getActualHarvestLevel(state)) {
           singleEntry = false;
         }
       }

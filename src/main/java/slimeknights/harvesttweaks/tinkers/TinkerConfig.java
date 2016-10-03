@@ -27,7 +27,10 @@ public class TinkerConfig extends ConfigFile {
     if(materials.isEmpty()) {
       for(Material material : TinkerRegistry.getAllMaterialsWithStats(MaterialTypes.HEAD)) {
         HeadMaterialStats stat = material.getStats(MaterialTypes.HEAD);
-        materials.putIfAbsent(material.getIdentifier(), stat.harvestLevel);
+        materials.computeIfAbsent(material.getIdentifier(), s -> {
+          setNeedsSaving();
+          return stat.harvestLevel;
+        });
       }
     }
   }
