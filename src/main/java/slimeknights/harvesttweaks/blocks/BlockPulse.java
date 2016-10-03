@@ -15,11 +15,12 @@ import java.util.stream.IntStream;
 
 import slimeknights.harvesttweaks.HarvestTweaks;
 import slimeknights.harvesttweaks.IPulse;
+import slimeknights.harvesttweaks.IPulseLogic;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 /** Sets block harvest levels through registry names */
 @Pulse(id = "blocks", forced = true)
-public class BlockPulse implements IPulse {
+public class BlockPulse implements IPulse, IPulseLogic {
 
   public static final BlockPulse INSTANCE = new BlockPulse();
 
@@ -31,6 +32,11 @@ public class BlockPulse implements IPulse {
   public void init(FMLInitializationEvent event) {
     config = HarvestTweaks.CONFIG.load(new BlockConfig(), BlockConfig.class);
     applyChanges();
+  }
+
+  @Override
+  public IPulseLogic getLogic() {
+    return this;
   }
 
   @Override

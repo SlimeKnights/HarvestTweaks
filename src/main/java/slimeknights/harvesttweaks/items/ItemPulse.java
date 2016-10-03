@@ -11,11 +11,14 @@ import org.apache.logging.log4j.Logger;
 
 import slimeknights.harvesttweaks.HarvestTweaks;
 import slimeknights.harvesttweaks.IPulse;
+import slimeknights.harvesttweaks.IPulseLogic;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 
 /** Sets item harvest levels through registry names */
 @Pulse(id = "items", forced = true)
-public class ItemPulse implements IPulse {
+public class ItemPulse implements IPulse, IPulseLogic {
+
+  public static final ItemPulse INSTANCE = new ItemPulse();
 
   private static Logger log = LogManager.getLogger("HarvestTweaks-Tools");
 
@@ -27,6 +30,10 @@ public class ItemPulse implements IPulse {
     applyChanges();
   }
 
+  @Override
+  public IPulseLogic getLogic() {
+    return this;
+  }
 
   @Override
   public void applyChanges() {

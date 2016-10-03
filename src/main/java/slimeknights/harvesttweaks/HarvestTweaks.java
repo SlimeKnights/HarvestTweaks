@@ -42,8 +42,8 @@ public class HarvestTweaks {
 
   private static List<IPulse> pulses = ImmutableList.<IPulse>builder()
       .add(BlockPulse.INSTANCE)
-      .add(new ItemPulse())
-      .add(new TinkerPulse())
+      .add(ItemPulse.INSTANCE)
+      .add(TinkerPulse.INSTANCE)
       .build();
 
   public static final NetworkWrapper NETWORK = new NetworkWrapper(MODID + ":sync");
@@ -85,7 +85,7 @@ public class HarvestTweaks {
   @SubscribeEvent
   public void update(ConfigChangedEvent.OnConfigChangedEvent event) {
     if(Config.configID.equals(event.getConfigID())) {
-      pulses.forEach(IPulse::applyChanges);
+      pulses.forEach(iPulse -> iPulse.getLogic().applyChanges());
     }
   }
 
