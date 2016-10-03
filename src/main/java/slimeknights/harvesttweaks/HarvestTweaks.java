@@ -76,6 +76,7 @@ public class HarvestTweaks {
     CONFIG.save();
 
     MinecraftForge.EVENT_BUS.register(this);
+    MinecraftForge.EVENT_BUS.register(new ExtraHarvestLevelHandler());
     if(event.getSide().isServer()) {
       MinecraftForge.EVENT_BUS.register(ConfigSyncHandler.INSTANCE);
     }
