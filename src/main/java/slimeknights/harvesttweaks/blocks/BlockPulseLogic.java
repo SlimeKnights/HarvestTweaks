@@ -52,7 +52,7 @@ public class BlockPulseLogic implements IPulseLogic {
     }
     config.blocks.forEach(
         (tool, blockHarvestLevels) -> blockHarvestLevels.forEach(
-            (blockMeta, level) -> modifyBlock(new ItemStack(blockMeta.block, 1, blockMeta.metadata), tool, level)
+            (blockMeta, level) -> modifyBlock(new ItemStack(blockMeta.block, 1, blockMeta.metadata == -1 ? OreDictionary.WILDCARD_VALUE : blockMeta.metadata), tool, level)
         ));
   }
 
