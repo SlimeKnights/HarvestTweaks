@@ -23,6 +23,11 @@ public class ItemConfig extends ConfigFile {
   }
 
   @Override
+  protected int getConfigVersion() {
+    return 1;
+  }
+
+  @Override
   public void insertDefaults() {
     if(tools.isEmpty()) {
       for(Item item : Item.REGISTRY) {

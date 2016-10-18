@@ -23,6 +23,11 @@ public class TinkerConfig extends ConfigFile {
   }
 
   @Override
+  protected int getConfigVersion() {
+    return 1;
+  }
+
+  @Override
   public void insertDefaults() {
     if(materials.isEmpty()) {
       for(Material material : TinkerRegistry.getAllMaterialsWithStats(MaterialTypes.HEAD)) {

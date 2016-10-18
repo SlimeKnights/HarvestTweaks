@@ -33,6 +33,11 @@ public class BlockConfig extends ConfigFile {
   }
 
   @Override
+  protected int getConfigVersion() {
+    return 1;
+  }
+
+  @Override
   public void insertDefaults() {
     if(blocks.isEmpty()) {
       insertBlockDefaults();
