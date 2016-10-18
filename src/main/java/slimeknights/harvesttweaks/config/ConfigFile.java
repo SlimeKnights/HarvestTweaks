@@ -7,7 +7,7 @@ import slimeknights.mantle.configurate.objectmapping.serialize.ConfigSerializabl
 @ConfigSerializable
 public abstract class ConfigFile extends AbstractConfigFile {
 
-  @Setting(comment = "If true, all changes made by this file will be logged")
+  @Setting(value = "_log_changes", comment = "If true, all changes made by this file will be logged")
   public boolean logChanges = false;
 
   public ConfigFile(String name) {
