@@ -66,10 +66,12 @@ public class BlockConfig extends ConfigFile {
       else {
         validStates.forEach(state -> {
           String harvestTool = block.getHarvestTool(state);
-          blocks.computeIfAbsent(harvestTool, x -> new HashMap<>()).computeIfAbsent(BlockMeta.of(state), blockMeta -> {
-            setNeedsSaving();
-            return getActualHarvestLevel(state);
-          });
+          if(harvestTool != null) {
+            blocks.computeIfAbsent(harvestTool, x -> new HashMap<>()).computeIfAbsent(BlockMeta.of(state), blockMeta -> {
+              setNeedsSaving();
+              return getActualHarvestLevel(state);
+            });
+          }
         });
       }
     }

@@ -24,7 +24,7 @@ public class BlockPulse implements IPulse {
 
   public static final BlockPulse INSTANCE = new BlockPulse();
 
-  private static Logger log = LogManager.getLogger("HarvestTweaks-Blocks");
+  static Logger log = LogManager.getLogger("HarvestTweaks-Blocks");
 
   public BlockConfig config;
   private BlockPulseLogic logic;
