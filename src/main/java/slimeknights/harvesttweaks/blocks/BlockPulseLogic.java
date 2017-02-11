@@ -15,7 +15,7 @@ import slimeknights.harvesttweaks.IPulseLogic;
 
 public class BlockPulseLogic implements IPulseLogic {
 
-  private static Logger log = LogManager.getLogger("HarvestTweaks-Blocks");
+  private static final Logger log = LogManager.getLogger("HarvestTweaks-Blocks");
 
   private final BlockConfig config;
 

@@ -1,8 +1,12 @@
 package slimeknights.harvesttweaks.blocks;
 
+import com.google.common.collect.ImmutableSet;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
@@ -11,14 +15,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import slimeknights.harvesttweaks.config.ConfigFile;
 import slimeknights.mantle.config.BlockMeta;
 import slimeknights.mantle.configurate.objectmapping.Setting;
 import slimeknights.mantle.configurate.objectmapping.serialize.ConfigSerializable;
 
+import static net.minecraft.block.material.Material.ANVIL;
+import static net.minecraft.block.material.Material.IRON;
+import static net.minecraft.block.material.Material.ROCK;
+
 @ConfigSerializable
 public class BlockConfig extends ConfigFile {
+
+  private static final Set<Material> PICKAXE_MATERIALS = ImmutableSet.of(ROCK, IRON, ANVIL);
 
   // key = tool, Value = Block:Meta + Harvestlevel
   @Setting
@@ -52,7 +63,7 @@ public class BlockConfig extends ConfigFile {
       List<IBlockState> validStates = new LinkedList<>();
 
       // check if all states have the same tool and harvest level
-      String tool = block.getHarvestTool(block.getDefaultState());
+      String tool = getActualHarvestTool(block.getDefaultState());
       int level = getActualHarvestLevel(block.getDefaultState());
       boolean singleEntry = getValidBlockstates(block, validStates, tool, level);
       if(singleEntry) {
@@ -65,7 +76,7 @@ public class BlockConfig extends ConfigFile {
       }
       else {
         validStates.forEach(state -> {
-          String harvestTool = block.getHarvestTool(state);
+          String harvestTool = getActualHarvestTool(state);
           if(harvestTool != null) {
             blocks.computeIfAbsent(harvestTool, x -> new HashMap<>()).computeIfAbsent(BlockMeta.of(state), blockMeta -> {
               setNeedsSaving();
@@ -87,7 +98,7 @@ public class BlockConfig extends ConfigFile {
           continue;
         }
 
-        String tool = block.getHarvestTool(block.getDefaultState());
+        String tool = getActualHarvestTool(block.getDefaultState());
         int level = getActualHarvestLevel(block.getDefaultState());
 
         level = toolSingleEntry.getOrDefault(matchedTool, level);
@@ -110,6 +121,15 @@ public class BlockConfig extends ConfigFile {
         }
       });
     }
+  }
+
+  /** Some blocks require a pickaxe, but don't have the pickaxe harvestTool set. Needs to be handled. */
+  private String getActualHarvestTool(IBlockState state) {
+    String tool = state.getBlock().getHarvestTool(state);
+    if(StringUtils.isNullOrEmpty(tool) && PICKAXE_MATERIALS.contains(state.getMaterial())) {
+      tool = "pickaxe";
+    }
+    return tool;
   }
 
   private int getActualHarvestLevel(IBlockState state) {
@@ -135,7 +155,7 @@ public class BlockConfig extends ConfigFile {
       if(block.getMetaFromState(state) == i) {
         validStates.add(state);
 
-        if(!Objects.equals(tool, block.getHarvestTool(state)) || level != getActualHarvestLevel(state)) {
+        if(!Objects.equals(tool, getActualHarvestTool(state)) || level != getActualHarvestLevel(state)) {
           singleEntry = false;
         }
       }
