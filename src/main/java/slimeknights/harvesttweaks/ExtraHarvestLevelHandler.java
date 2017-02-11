@@ -33,12 +33,6 @@ public class ExtraHarvestLevelHandler {
       return;
     }
 
-    // block requires a harvest level, but does the material require a tool?
-    if(!state.getMaterial().isToolNotRequired()) {
-      // a tool is required, we don't have to do anything
-      return;
-    }
-
     // The tool does NOT require a tool, but has a harvest level for a tool set
     // we now manually check if this requiremnet is fulfilled
 
@@ -53,7 +47,14 @@ public class ExtraHarvestLevelHandler {
       }
     }
 
-    // we require a tool, but no fitting tool is present. we prevent any breaking
-    event.setCanceled(true);
+    // block requires a harvest level, but does the material require a tool?
+    if(!state.getMaterial().isToolNotRequired()) {
+      // a tool is required, if it's too weak ensure that the breakspeed is low
+      event.setNewSpeed(1f);
+    }
+    else {
+      // we require a tool, but no tool would be required by default. we prevent any breaking
+      event.setCanceled(true);
+    }
   }
 }
