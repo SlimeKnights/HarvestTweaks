@@ -2,6 +2,7 @@ package slimeknights.harvesttweaks.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -64,6 +65,9 @@ public class BlockPulseLogic implements IPulseLogic {
   }
 
   private void modifyBlock(Block block, int metadata, String tool, int harvestLevel) {
+    if( block == Blocks.AIR) {
+      return;
+    }
     IntStream metas;
     if(metadata == OreDictionary.WILDCARD_VALUE) {
       metas = IntStream.range(0, 16);
