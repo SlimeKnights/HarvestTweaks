@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import slimeknights.tconstruct.library.utils.ToolHelper;
+
 
 // This class handles harvest levels on the same block but where some metadata requires a tool,
 // and some metadatas don't
@@ -40,7 +42,8 @@ public class ExtraHarvestLevelHandler {
     ItemStack itemStack = player.getHeldItemMainhand();
 
     if(itemStack != null && itemStack.getItem() != null) {
-      if(itemStack.getItem().getHarvestLevel(itemStack, tool, player, state) >= hlvl)
+      if(itemStack.getItem().getHarvestLevel(itemStack, tool, player, state) >= hlvl
+         || ToolHelper.isBroken(itemStack))
       // everything ok, correct tool
       {
         return;
