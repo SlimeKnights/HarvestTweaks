@@ -43,18 +43,7 @@ public class ConfigGui extends GuiConfig {
     }
 
     @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass() {
-      return ConfigGui.class;
-    }
-
-    @Override
     public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
-      // dead code, never called
-      return null;
-    }
-
-    @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
       // dead code, never called
       return null;
     }
