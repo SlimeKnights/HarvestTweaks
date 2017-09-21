@@ -28,10 +28,10 @@ import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 @Mod(modid = HarvestTweaks.MODID,
     version = HarvestTweaks.VERSION,
-    dependencies = "required-after:Forge@[12.18.1.2073,);" +
-                   "required-after:mantle@[1.10.2-1.1.5,);" +
+    dependencies = "required-after:forge@[13.20.1.2476,);" +
+                   "required-after:mantle@[1.11.2-1.2.0,);" +
                    "after:*",
-    acceptedMinecraftVersions = "[1.10.2, 1.11)"
+    acceptedMinecraftVersions = "[1.11.2, 1.12)"
 //    guiFactory = "slimeknights.harvesttweaks.config.ConfigGui$GuiFactory"
 )
 public class HarvestTweaks {
