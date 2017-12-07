@@ -7,12 +7,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import slimeknights.tconstruct.library.utils.ToolHelper;
+import java.util.function.Predicate;
+
+import slimeknights.harvesttweaks.tinkers.TinkerPulse;
 
 
 // This class handles harvest levels on the same block but where some metadata requires a tool,
 // and some metadatas don't
 public class ExtraHarvestLevelHandler {
+
+  private static Predicate<ItemStack> ticIsBrokenSupport;
 
   @SubscribeEvent
   public void breakSpeed(PlayerEvent.BreakSpeed event) {
@@ -41,9 +45,9 @@ public class ExtraHarvestLevelHandler {
     String tool = block.getHarvestTool(state);
     ItemStack itemStack = player.getHeldItemMainhand();
 
-    if(itemStack != null && itemStack.getItem() != null) {
+    if(!itemStack.isEmpty()) {
       if(itemStack.getItem().getHarvestLevel(itemStack, tool, player, state) >= hlvl
-         || ToolHelper.isBroken(itemStack))
+         || ticIsBrokenSupport.test(itemStack))
       // everything ok, correct tool
       {
         return;
@@ -58,6 +62,15 @@ public class ExtraHarvestLevelHandler {
     else {
       // we require a tool, but no tool would be required by default. we prevent any breaking
       event.setCanceled(true);
+    }
+  }
+
+  public static void initTicSupport() {
+    if(HarvestTweaks.pulseManager.isPulseLoaded(TinkerPulse.MODID)) {
+      ticIsBrokenSupport = slimeknights.tconstruct.library.utils.ToolHelper::isBroken;
+    }
+    else {
+      ticIsBrokenSupport = o -> true;
     }
   }
 }

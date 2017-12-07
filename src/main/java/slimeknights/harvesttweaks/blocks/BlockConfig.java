@@ -94,7 +94,7 @@ public class BlockConfig extends ConfigFile {
       Map<String, Integer> toolSingleEntry = new HashMap<>();
       for(ItemStack oreEntry : OreDictionary.getOres(ore)) {
         Block block = Block.getBlockFromItem(oreEntry.getItem());
-        if(block == null) {
+        if(block.isAir(block.getDefaultState(), null, null)) {
           continue;
         }
 

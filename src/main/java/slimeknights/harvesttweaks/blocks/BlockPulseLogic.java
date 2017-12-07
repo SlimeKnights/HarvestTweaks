@@ -59,7 +59,7 @@ public class BlockPulseLogic implements IPulseLogic {
 
   private void modifyBlock(ItemStack stack, String tool, int harvestLevel) {
     Block block = Block.getBlockFromItem(stack.getItem());
-    if(block != null) {
+    if(!block.isAir(block.getDefaultState(), null, null)) {
       modifyBlock(block, stack.getItemDamage(), tool, harvestLevel);
     }
   }

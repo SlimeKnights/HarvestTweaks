@@ -29,8 +29,7 @@ import slimeknights.mantle.pulsar.pulse.PulseMeta;
 @Mod(modid = HarvestTweaks.MODID,
     version = HarvestTweaks.VERSION,
     dependencies = "required-after:forge@[14.21.1.2410,);" +
-                   "required-after:mantle@[1.12-1.3.1,);" +
-                   "after:*",
+                   "required-after:mantle@[1.12-1.3.1,);",
     acceptedMinecraftVersions = "[1.12, 1.13)"
 //    guiFactory = "slimeknights.harvesttweaks.config.ConfigGui$GuiFactory"
 )
@@ -49,7 +48,7 @@ public class HarvestTweaks {
 
   public static final NetworkWrapper NETWORK = new NetworkWrapper(MODID + ":sync");
 
-  private static PulseManager pulseManager;
+  public static PulseManager pulseManager;
 
   static {
     pulseManager = new PulseManager(new PulseConfiguration());
@@ -81,6 +80,7 @@ public class HarvestTweaks {
     if(event.getSide().isServer()) {
       MinecraftForge.EVENT_BUS.register(ConfigSyncHandler.INSTANCE);
     }
+    ExtraHarvestLevelHandler.initTicSupport();
   }
 
 

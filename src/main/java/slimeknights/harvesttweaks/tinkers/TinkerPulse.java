@@ -16,7 +16,7 @@ public class TinkerPulse implements IPulse {
 
   public static final TinkerPulse INSTANCE = new TinkerPulse();
 
-  static final String MODID = "tconstruct";
+  public static final String MODID = "tconstruct";
 
   private TinkerConfig config;
   private TinkerPulseLogic logic;

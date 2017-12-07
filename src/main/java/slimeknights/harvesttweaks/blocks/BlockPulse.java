@@ -2,16 +2,10 @@ package slimeknights.harvesttweaks.blocks;
 
 import com.google.common.eventbus.Subscribe;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.stream.IntStream;
 
 import slimeknights.harvesttweaks.HarvestTweaks;
 import slimeknights.harvesttweaks.IPulse;

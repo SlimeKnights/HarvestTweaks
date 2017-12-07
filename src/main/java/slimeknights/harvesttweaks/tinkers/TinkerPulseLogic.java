@@ -1,6 +1,5 @@
 package slimeknights.harvesttweaks.tinkers;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import org.apache.logging.log4j.LogManager;
